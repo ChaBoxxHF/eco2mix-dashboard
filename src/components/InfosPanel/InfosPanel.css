@@ -1,22 +1,27 @@
 .indicator {
   display: flex;
   gap: 10px;
-  border-radius: 50px;
   justify-content: center;
-  margin: 0 auto;
+  padding: 1rem;
 }
 
 #ind1 {
   color: green;
   background-color: lightblue;
+  border-radius: 20px;
+  padding: 10px 15px;
 }
 
 #ind2 {
   color: purple;
   background-color: lightblue;
+  padding: 10px 15px;
+  border-radius: 20px;
 }
 
 #ind3 {
   color: brown;
   background-color: lightblue;
+  padding: 10px 15px;
+  border-radius: 20px;
 }
