@@ -1,3 +1,5 @@
+import "./MetropolisCard.css";
+
 function MetropolisCard() {
   const ville = "Paris";
   const consommation = "1200 MW";

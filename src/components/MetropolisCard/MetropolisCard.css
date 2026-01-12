@@ -1,0 +1,15 @@
+.metropolis-card {
+  background-color: slategray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.card-content {
+  color: darkgreen;
+}
+
+.label {
+}

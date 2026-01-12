@@ -6,7 +6,7 @@ import MetropolisCard from "./components/MetropolisCard/MetropolisCard.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <MetropolisCard />
     <InfosPanel />
+    <MetropolisCard />
   </StrictMode>
 );
