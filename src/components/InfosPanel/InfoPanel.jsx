@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./InfosPanel.css";
 
 function InfosPanel({ totalCities = 33, avgConsommation, period }) {
+  //normalement y'as pas besoins de constantes, j'avais juste la flemme d'aller modifier plus bas :)
   const nbMetropole = totalCities;
   const consommationMoyen = avgConsommation;
   const periodObserv = period;
