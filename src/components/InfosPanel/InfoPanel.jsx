@@ -7,15 +7,15 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
   const consommationMoyen = avgConsommation;
   const periodObserv = period;
 
-  let [clickBouton, clicked] = useState(0);
+  let [count, setCount] = useState(0);
 
   const handleClick = () => {
-    console.log(clickBouton);
-    clicked(clickBouton + 1);
+    console.log(count);
+    setCount(count + 1);
   };
 
   const reinitialiser = () => {
-    clicked((clickBouton = 0));
+    setCount((count = 0));
   };
 
   return (
@@ -29,11 +29,11 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
 
         <button
           onClick={handleClick}
-          style={clickBouton >= 5 ? { color: "red" } : {}}>
-          cliquez-moi
+          style={count >= 5 ? { background: "red" } : {}}>
+          {count >= 5 ? "ALED" : "cliquez-moi"}
         </button>
         <button onClick={reinitialiser}>reinitialiser</button>
-        <p>Nombre de fois cliqué : {clickBouton}</p>
+        <p>Nombre de fois cliqué : {count}</p>
       </div>
     </>
   );
