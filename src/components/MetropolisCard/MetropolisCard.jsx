@@ -1,6 +1,8 @@
 import "./MetropolisCard.css";
+import myData from "/eco2mix-dashboard//public/json/eco2mix-metropoles-2025-janvier-01.json";
 
 function MetropolisCard() {
+    const liste = myData.map(() =>)
   const ville = "Paris";
   const consommation = "1200 MW";
   return (
