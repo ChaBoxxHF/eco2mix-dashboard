@@ -9,10 +9,14 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
 
   const [count, setCount] = useState(0);
   const [theme, setTheme] = useState("sombre");
+
   const [loading, setLoading] = useState(true);
   const [villes, setVilles] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(""); // date sélectionnée
-  const [selectedHour, setSelectedHour] = useState(""); // heure globale
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedHour, setSelectedHour] = useState("");
+  const [refresh, setRefresh] = useState(0);
+  const [tri, setTri] = useState("none");
+  const [triConsum, setTriConsum] = useState("none");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +65,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     };
 
     fetchData();
-  }, []);
+  }, [refresh]);
 
   if (loading) return <div>Chargement ...</div>;
 
@@ -96,6 +100,48 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     setTheme(theme === "sombre" ? "clair" : "sombre");
   };
 
+  const handleRefresh = () => {
+    setVilles([]);
+    setRefresh(refresh + 1);
+  };
+
+  const toggleSortName = () => {
+    // bascule tri par nom (désactive tri conso)
+    setTriConsum("none");
+    setTri((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  const toggleSortConsum = () => {
+    // bascule tri par consommation (désactive tri nom)
+    setTri("none");
+    setTriConsum((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  const affichageVille = (() => {
+    // enrichir avec la consommation pour la date/heure sélectionnées
+    const enriched = villes.map((v) => {
+      const dataHour = v.datas[selectedDate]?.[selectedHour] || {};
+      const consommation = Number(dataHour.consommation ?? 0);
+      return { ...v, _consommation: consommation };
+    });
+
+    if (triConsum !== "none") {
+      const sortedCons = [...enriched].sort(
+        (a, b) => a._consommation - b._consommation
+      );
+      return triConsum === "asc" ? sortedCons : sortedCons.reverse();
+    }
+
+    if (tri !== "none") {
+      const sortedName = [...enriched].sort((a, b) =>
+        a.nom.localeCompare(b.nom, "fr")
+      );
+      return tri === "asc" ? sortedName : sortedName.reverse();
+    }
+
+    return villes;
+  })();
+
   return (
     <>
       <div>coucou!</div>
@@ -117,10 +163,15 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
             Changer thème (actuel: {`theme ${theme}`})
           </button>
 
-          {/* <button onClick={}>refresh</button> */}
+          <button onClick={handleRefresh}>refresh</button>
+          <button onClick={toggleSortName}>
+            {tri === "asc" ? "Noms Z→A" : "Trier noms A→Z"}
+          </button>
+          <button onClick={toggleSortConsum}>
+            {triConsum === "asc" ? "Conso décroissant" : "Conso croissante"}
+          </button>
         </div>
 
-        {/* DATE PICKER */}
         <div style={{ margin: "1rem 0" }}>
           <label>
             Sélectionner la date :{" "}
@@ -151,7 +202,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
 
         {/* Affichage des cartes */}
         <div>
-          {villes.map((ville) => {
+          {affichageVille.map((ville) => {
             const dataHour = ville.datas[selectedDate]?.[selectedHour] || {};
 
             // appliquer les valeurs par défaut si pas présentes
