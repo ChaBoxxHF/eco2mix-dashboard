@@ -11,42 +11,48 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
   const [theme, setTheme] = useState("sombre");
   const [loading, setLoading] = useState(true);
   const [villes, setVilles] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(""); // date sélectionnée
+  const [selectedHour, setSelectedHour] = useState(""); // heure globale
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "/json/eco2mix-metropoles-2025-janvier-01.json"
-        );
+        const response = await fetch("/json/eco2mix-metropoles-2025.json");
         const data = await response.json();
 
-        // 🔹 Transformation du JSON pour ne prendre que 5 premières heures par ville
+        // Transformer le JSON en tableau exploitable
         const villesTransformees = Object.entries(data)
           .map(([nomVille, villeData]) => {
             const datas = villeData?.datas;
             if (!datas) return null;
 
-            const [date] = Object.keys(datas);
-            if (!date) return null;
-
-            const heures = Object.entries(datas[date])
-              .sort()
-              .map(([heure, values]) => ({
-                heure,
-                consommation: values.consommation,
-                production: values.production,
-                echangePhysique: values.echanges_physiques,
-              }));
+            const dates = Object.keys(datas);
 
             return {
               nom: nomVille,
-              date,
-              heures,
+              datas, // toutes les dates et heures
+              dates, // dates disponibles
             };
           })
           .filter(Boolean);
 
         setVilles(villesTransformees);
+
+        // initialiser la date et l'heure à la première disponible
+        if (villesTransformees.length > 0) {
+          const firstDate = villesTransformees[0].dates[0];
+          setSelectedDate(firstDate);
+
+          // toutes les heures disponibles pour cette date (union)
+          const hoursSet = new Set();
+          villesTransformees.forEach((v) => {
+            if (v.datas[firstDate]) {
+              Object.keys(v.datas[firstDate]).forEach((h) => hoursSet.add(h));
+            }
+          });
+          const hoursArray = Array.from(hoursSet).sort();
+          setSelectedHour(hoursArray[0] || "");
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -57,15 +63,43 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Chargement ...</div>;
-  }
+  if (loading) return <div>Chargement ...</div>;
+
+  // toutes les dates pour le picker date
+  const allDates = Array.from(
+    new Set(villes.flatMap((ville) => ville.dates))
+  ).sort();
+
+  // toutes les heures pour le picker heure
+  const allHours = Array.from(
+    new Set(
+      villes.flatMap(
+        (ville) =>
+          (ville.datas[selectedDate] &&
+            Object.keys(ville.datas[selectedDate])) ||
+          []
+      )
+    )
+  ).sort();
+
+  const handleClickCount = () => {
+    console.log(count);
+    setCount(count + 1);
+  };
+
+  const reinitialiser = () => {
+    setCount(0);
+  };
+
+  const handleClickTheme = () => {
+    console.log("Changement de thème");
+    setTheme(theme === "sombre" ? "clair" : "sombre");
+  };
 
   return (
     <>
       <div>coucou!</div>
       <h3>Indicateurs clés</h3>
-
       <div className={`theme${theme}`}>
         <div className="indicator">
           <div id="ind1">Nombre Metropole = {nbMetropole}</div>
@@ -73,34 +107,70 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
           <div id="ind3">periodObserv = {periodObserv}</div>
 
           <button
-            onClick={() => setCount(count + 1)}
+            onClick={handleClickCount}
             style={count >= 5 ? { background: "red" } : {}}>
             {count >= 5 ? "ALED" : "cliquez-moi"}
           </button>
-
-          <button onClick={() => setCount(0)}>reinitialiser</button>
-
+          <button onClick={reinitialiser}>reinitialiser</button>
           <p>Nombre de fois cliqué : {count}</p>
-
-          <button
-            onClick={() => setTheme(theme === "sombre" ? "clair" : "sombre")}>
-            Changer thème (actuel: theme {theme})
+          <button onClick={handleClickTheme}>
+            Changer thème (actuel: {`theme ${theme}`})
           </button>
+
+          {/* <button onClick={}>refresh</button> */}
         </div>
 
-        <div>
-          <h1>Affichage de quelques données :</h1>
+        {/* DATE PICKER */}
+        <div style={{ margin: "1rem 0" }}>
+          <label>
+            Sélectionner la date :{" "}
+            <select
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}>
+              {allDates.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <div>
-            {villes.map((ville) => (
+          <label style={{ marginLeft: "1rem" }}>
+            Sélectionner l’heure :{" "}
+            <select
+              value={selectedHour}
+              onChange={(e) => setSelectedHour(e.target.value)}>
+              {allHours.map((h) => (
+                <option key={h} value={h}>
+                  {h}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+
+        {/* Affichage des cartes */}
+        <div>
+          {villes.map((ville) => {
+            const dataHour = ville.datas[selectedDate]?.[selectedHour] || {};
+
+            // appliquer les valeurs par défaut si pas présentes
+            const consommation = dataHour.consommation ?? 0;
+            const production = dataHour.production ?? "inconnu";
+            const echangePhysique = dataHour.echanges_physiques ?? "inconnu";
+
+            return (
               <MetropolisCard
                 key={ville.nom}
                 nomVille={ville.nom}
-                date={ville.date}
-                heures={ville.heures}
+                date={selectedDate}
+                heure={selectedHour}
+                consommation={consommation}
+                production={production}
+                echangePhysique={echangePhysique}
               />
-            ))}
-          </div>
+            );
+          })}
         </div>
       </div>
     </>

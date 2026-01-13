@@ -1,16 +1,14 @@
-import { useState } from "react";
 import "./MetropolisCard.css";
 
-function MetropolisCard({ nomVille, date, heures = [] }) {
-  // heure sélectionnée (par défaut la première)
-  const [heureSelectionnee, setHeureSelectionnee] = useState(
-    heures[0]?.heure || ""
-  );
-
-  // données correspondant à l’heure sélectionnée
-  const dataHeure = heures.find((h) => h.heure === heureSelectionnee);
-
-  if (!nomVille || !dataHeure) return null;
+function MetropolisCard({
+  nomVille,
+  date,
+  heure,
+  consommation,
+  production,
+  echangePhysique,
+}) {
+  if (!nomVille) return null;
 
   return (
     <div className="metropolis-card">
@@ -24,30 +22,34 @@ function MetropolisCard({ nomVille, date, heures = [] }) {
 
         <p>
           <span className="label">Heure :</span>
-          <select
-            value={heureSelectionnee}
-            onChange={(e) => setHeureSelectionnee(e.target.value)}>
-            {heures.map((h) => (
-              <option key={h.heure} value={h.heure}>
-                {h.heure}
-              </option>
-            ))}
-          </select>
+          <span className="value">{heure || <i>inconnu</i>}</span>
         </p>
 
         <p>
           <span className="label">Consommation :</span>
-          <span className="value">{dataHeure.consommation}</span>
+          <span className="value">{consommation}</span>
         </p>
 
         <p>
           <span className="label">Production :</span>
-          <span className="value">{dataHeure.production}</span>
+          <span
+            className="value"
+            style={{
+              fontStyle: production === "inconnu" ? "italic" : "normal",
+            }}>
+            {production}
+          </span>
         </p>
 
         <p>
           <span className="label">Échanges physiques :</span>
-          <span className="value">{dataHeure.echangePhysique}</span>
+          <span
+            className="value"
+            style={{
+              fontStyle: echangePhysique === "inconnu" ? "italic" : "normal",
+            }}>
+            {echangePhysique}
+          </span>
         </p>
       </div>
     </div>
