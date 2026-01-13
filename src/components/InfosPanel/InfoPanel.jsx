@@ -3,29 +3,52 @@ import "./InfosPanel.css";
 import MetropolisCard from "../MetropolisCard/MetropolisCard";
 
 function InfosPanel({ totalCities = 33, avgConsommation, period }) {
-  //normalement y'as pas besoins de constantes, j'avais juste la flemme d'aller modifier plus bas :)
   const nbMetropole = totalCities;
   const consommationMoyen = avgConsommation;
   const periodObserv = period;
 
-  let [count, setCount] = useState(0);
+  const [count, setCount] = useState(0);
   const [theme, setTheme] = useState("sombre");
   const [loading, setLoading] = useState(true);
-  const [donneeJson, setDonneeJson] = useState(null);
   const [villes, setVilles] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const villes = await fetch(
+        const response = await fetch(
           "/json/eco2mix-metropoles-2025-janvier-01.json"
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            setDonneeJson(data);
-          });
+        );
+        const data = await response.json();
+
+        // 🔹 Transformation du JSON pour ne prendre que 5 premières heures par ville
+        const villesTransformees = Object.entries(data)
+          .map(([nomVille, villeData]) => {
+            const datas = villeData?.datas;
+            if (!datas) return null;
+
+            const [date] = Object.keys(datas);
+            if (!date) return null;
+
+            const heures = Object.entries(datas[date])
+              .sort()
+              .map(([heure, values]) => ({
+                heure,
+                consommation: values.consommation,
+                production: values.production,
+                echangePhysique: values.echanges_physiques,
+              }));
+
+            return {
+              nom: nomVille,
+              date,
+              heures,
+            };
+          })
+          .filter(Boolean);
+
+        setVilles(villesTransformees);
       } catch (error) {
-        setError(error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -34,38 +57,15 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (donneeJson) {
-      setVilles(Object.keys(donneeJson));
-    }
-  }, [donneeJson]);
-
   if (loading) {
     return <div>Chargement ...</div>;
   }
 
-  const handleClickCount = () => {
-    console.log(count);
-    setCount(count + 1);
-  };
-
-  const reinitialiser = () => {
-    setCount((count = 0));
-  };
-
-  const handleClickTheme = () => {
-    console.log("Changement de thème");
-    setTheme(theme === "sombre" ? "clair" : "sombre");
-  };
-
-  const chargerConsommationJournalière = (data) => {};
-
   return (
     <>
-      {console.log(villes)}
-      {console.log(donneeJson)}
       <div>coucou!</div>
       <h3>Indicateurs clés</h3>
+
       <div className={`theme${theme}`}>
         <div className="indicator">
           <div id="ind1">Nombre Metropole = {nbMetropole}</div>
@@ -73,20 +73,33 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
           <div id="ind3">periodObserv = {periodObserv}</div>
 
           <button
-            onClick={handleClickCount}
+            onClick={() => setCount(count + 1)}
             style={count >= 5 ? { background: "red" } : {}}>
             {count >= 5 ? "ALED" : "cliquez-moi"}
           </button>
-          <button onClick={reinitialiser}>reinitialiser</button>
+
+          <button onClick={() => setCount(0)}>reinitialiser</button>
+
           <p>Nombre de fois cliqué : {count}</p>
-          <button onClick={handleClickTheme}>
-            Changer thème (actuel: {`theme ${theme}`})
+
+          <button
+            onClick={() => setTheme(theme === "sombre" ? "clair" : "sombre")}>
+            Changer thème (actuel: theme {theme})
           </button>
         </div>
+
         <div>
-          <h1>affichage de quelques données :</h1>
+          <h1>Affichage de quelques données :</h1>
+
           <div>
-            <MetropolisCard />
+            {villes.map((ville) => (
+              <MetropolisCard
+                key={ville.nom}
+                nomVille={ville.nom}
+                date={ville.date}
+                heures={ville.heures}
+              />
+            ))}
           </div>
         </div>
       </div>
