@@ -25,3 +25,11 @@
   padding: 10px 15px;
   border-radius: 20px;
 }
+
+.themesombre {
+  background-color: darkcyan;
+}
+
+.themeclair {
+  background-color: whitesmoke;
+}

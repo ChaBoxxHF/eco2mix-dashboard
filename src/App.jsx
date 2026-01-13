@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <InfosPanel /*totalCities={15}*/ avgConsommation={2222} period={"test"} />
-      <MetropolisCard />
+      {/* <MetropolisCard /> */}
     </>
   );
 }
