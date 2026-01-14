@@ -1,11 +1,11 @@
 import InfosPanel from "./components/InfosPanel/InfoPanel";
 import MetropolisCard from "./components/MetropolisCard/MetropolisCard";
+import Routeur from "./routes/Router";
 
 function App() {
   return (
     <>
-      <InfosPanel /*totalCities={15}*/ avgConsommation={2222} period={"test"} />
-      {/* <MetropolisCard /> */}
+      <Routeur />
     </>
   );
 }

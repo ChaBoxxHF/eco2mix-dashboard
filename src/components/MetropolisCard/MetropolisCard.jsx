@@ -7,11 +7,12 @@ function MetropolisCard({
   consommation,
   production,
   echangePhysique,
+  theme,
 }) {
   if (!nomVille) return null;
 
   return (
-    <div className="metropolis-card">
+    <div className={`theme${theme}`}>
       <h2>Ville : {nomVille}</h2>
 
       <div className="card-content">

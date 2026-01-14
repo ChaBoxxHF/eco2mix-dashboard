@@ -17,6 +17,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
   const [refresh, setRefresh] = useState(0);
   const [tri, setTri] = useState("none");
   const [triConsum, setTriConsum] = useState("none");
+  const [filtreConsumption, setFiltreConsumption] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,22 +126,34 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
       return { ...v, _consommation: consommation };
     });
 
+    // filtrer selon le seuil si > 0
+    const filtered =
+      filtreConsumption > 0
+        ? enriched.filter((v) => v._consommation > filtreConsumption)
+        : enriched;
+
     if (triConsum !== "none") {
-      const sortedCons = [...enriched].sort(
+      const sortedCons = [...filtered].sort(
         (a, b) => a._consommation - b._consommation
       );
       return triConsum === "asc" ? sortedCons : sortedCons.reverse();
     }
 
     if (tri !== "none") {
-      const sortedName = [...enriched].sort((a, b) =>
+      const sortedName = [...filtered].sort((a, b) =>
         a.nom.localeCompare(b.nom, "fr")
       );
       return tri === "asc" ? sortedName : sortedName.reverse();
     }
 
-    return villes;
+    return filtered;
   })();
+
+  const handleFiltrerConsumption = (e) => {
+    const value = e.target.value;
+    // stocker une valeur numérique (0 si vide ou invalide)
+    setFiltreConsumption(value === "" ? null : Number(value));
+  };
 
   return (
     <>
@@ -162,7 +175,8 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
           <button onClick={handleClickTheme}>
             Changer thème (actuel: {`theme ${theme}`})
           </button>
-
+        </div>
+        <div>
           <button onClick={handleRefresh}>refresh</button>
           <button onClick={toggleSortName}>
             {tri === "asc" ? "Noms Z→A" : "Trier noms A→Z"}
@@ -170,6 +184,13 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
           <button onClick={toggleSortConsum}>
             {triConsum === "asc" ? "Conso décroissant" : "Conso croissante"}
           </button>
+          <input
+            type="number"
+            min="0"
+            placeholder="filtre consommation"
+            value={filtreConsumption}
+            onChange={handleFiltrerConsumption}
+          />
         </div>
 
         <div style={{ margin: "1rem 0" }}>
@@ -219,6 +240,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
                 consommation={consommation}
                 production={production}
                 echangePhysique={echangePhysique}
+                theme={theme}
               />
             );
           })}

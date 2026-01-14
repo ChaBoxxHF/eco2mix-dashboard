@@ -1,5 +1,14 @@
-.metropolis-card {
-  background-color: slategray;
+.themesombre {
+  background-color: darkcyan;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.themeclair {
+  background-color: whitesmoke;
   display: flex;
   flex-direction: column;
   justify-content: center;
