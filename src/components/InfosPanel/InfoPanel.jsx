@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./InfosPanel.css";
+import "../../styles/InfosPanel.css";
 import MetropolisCard from "../MetropolisCard/MetropolisCard";
 
 function InfosPanel({ totalCities = 33, avgConsommation, period }) {
@@ -8,7 +8,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
   const periodObserv = period;
 
   const [count, setCount] = useState(0);
-  const [theme, setTheme] = useState("sombre");
+  // const [theme, setTheme] = useState("sombre");
 
   const [loading, setLoading] = useState(true);
   const [villes, setVilles] = useState([]);
@@ -17,7 +17,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
   const [refresh, setRefresh] = useState(0);
   const [tri, setTri] = useState("none");
   const [triConsum, setTriConsum] = useState("none");
-  const [filtreConsumption, setFiltreConsumption] = useState(null);
+  const [filtreConsumption, setFiltreConsumption] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,10 +96,10 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     setCount(0);
   };
 
-  const handleClickTheme = () => {
-    console.log("Changement de thème");
-    setTheme(theme === "sombre" ? "clair" : "sombre");
-  };
+  // const handleClickTheme = () => {
+  //   console.log("Changement de thème");
+  //   setTheme(theme === "sombre" ? "clair" : "sombre");
+  // };
 
   const handleRefresh = () => {
     setVilles([]);
@@ -159,7 +159,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
     <>
       <div>coucou!</div>
       <h3>Indicateurs clés</h3>
-      <div className={`theme${theme}`}>
+      <div /*className={`theme${theme}`}*/>
         <div className="indicator">
           <div id="ind1">Nombre Metropole = {nbMetropole}</div>
           <div id="ind2">consommationMoyen = {consommationMoyen}</div>
@@ -172,9 +172,9 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
           </button>
           <button onClick={reinitialiser}>reinitialiser</button>
           <p>Nombre de fois cliqué : {count}</p>
-          <button onClick={handleClickTheme}>
+          {/* <button onClick={handleClickTheme}>
             Changer thème (actuel: {`theme ${theme}`})
-          </button>
+          </button> */}
         </div>
         <div>
           <button onClick={handleRefresh}>refresh</button>
@@ -240,7 +240,7 @@ function InfosPanel({ totalCities = 33, avgConsommation, period }) {
                 consommation={consommation}
                 production={production}
                 echangePhysique={echangePhysique}
-                theme={theme}
+                // theme={theme}
               />
             );
           })}

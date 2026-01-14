@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import MetropolisDetail from "./MetropolisDetail";
 import { Link, useNavigate } from "react-router-dom";
+import "../styles/Metropolises.css";
 
 function Metropolises() {
   const [nomMetropoles, setNomMetropoles] = useState([]);
@@ -39,12 +39,16 @@ function Metropolises() {
   return (
     <>
       <h3>Nom des métropoles</h3>
-      {nomMetropoles.map((metropole) => (
-        <div key={metropole.id || metropole.nom}>
-          <h5>{metropole.nom}</h5>
-          <button onClick={() => chargerPage(metropole.id)}>Voir Conso</button>
-        </div>
-      ))}
+      <div className="panel">
+        {nomMetropoles.map((metropole) => (
+          <div key={metropole.id || metropole.nom}>
+            <h5>{metropole.nom}</h5>
+            <button onClick={() => chargerPage(metropole.id)}>
+              Voir Conso
+            </button>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

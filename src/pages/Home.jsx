@@ -1,9 +1,9 @@
+import { useSelector } from "react-redux";
+
 function Home() {
-  return (
-    <>
-      <h1>Page d'accueil</h1>
-    </>
-  );
+  const language = useSelector((state) => state.language);
+
+  return <>{language === "fr" ? "Page d'accueil" : "Home page"}</>;
 }
 
 export default Home;

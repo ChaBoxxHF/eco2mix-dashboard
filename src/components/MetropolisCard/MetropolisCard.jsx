@@ -1,4 +1,4 @@
-import "./MetropolisCard.css";
+import "../../styles/MetropolisCard.css";
 
 function MetropolisCard({
   nomVille,
@@ -7,12 +7,12 @@ function MetropolisCard({
   consommation,
   production,
   echangePhysique,
-  theme,
+  // theme,
 }) {
   if (!nomVille) return null;
 
   return (
-    <div className={`theme${theme}`}>
+    <div /*className={`theme${theme}`}*/>
       <h2>Ville : {nomVille}</h2>
 
       <div className="card-content">

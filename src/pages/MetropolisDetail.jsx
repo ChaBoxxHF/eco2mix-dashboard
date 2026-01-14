@@ -25,9 +25,9 @@ function MetropolisDetail() {
     fetchDatas();
   }, []);
 
-  if (loading) return <div>Chargement ...</div>;
-
   const { id } = useParams();
+
+  if (loading) return <div>Chargement ...</div>;
 
   const metropoleDatas = Object.values(metropolisesDatas).find(
     (m) => m.code_insee_epci === id
